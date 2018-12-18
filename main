@@ -26,4 +26,4 @@ with open("config.json") as config_json:
                 raise
         cmd=["tar", "xf", src, "-C", dataset["id"]]
         print(cmd)
-        #subprocess.call(cmd)
+        subprocess.call(cmd)
