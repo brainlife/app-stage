@@ -26,4 +26,7 @@ with open("config.json") as config_json:
                 raise
         cmd=["tar", "xf", src, "-C", dataset["id"]]
         print(cmd)
-        subprocess.call(cmd)
+        code=subprocess.call(cmd)
+
+        if code != 0:
+            sys.exit(code)
