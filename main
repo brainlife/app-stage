@@ -17,16 +17,17 @@ with open("config.json") as config_json:
     config = json.load(config_json)
     for dataset in config["datasets"]:
         src=os.environ["BRAINLIFE_ARCHIVE"]+"/"+dataset["project"]+"/"+dataset["id"]+".tar"
+
+        outdir=dataset["id"]
+        if 'outdir' in dataset:
+            outdir=dataset["outdir"]
+
         try: 
-            os.makedirs(dataset["id"])
+            os.makedirs(outdir)
         except OSError as exc:
-            if exc.errno == errno.EEXIST and os.path.isdir(dataset["id"]):
+            if exc.errno == errno.EEXIST and os.path.isdir(outdir):
                 pass
             else:
                 raise
-        cmd=["tar", "xf", src, "-C", dataset["id"]]
-        print(cmd)
-        code=subprocess.call(cmd)
-
-        if code != 0:
-            sys.exit(code)
+        code=subprocess.call(["tar", "xf", src, "-C", outdir])
+        sys.exit(code)
