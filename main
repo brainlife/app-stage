@@ -36,11 +36,13 @@ with open("config.json") as config_json:
 
             src=os.environ["BRAINLIFE_ARCHIVE"]+"/"+dataset["project"]+"/"+dataset["id"]+".tar"
             code=subprocess.call(["tar", "xf", src, "-C", outdir])
-            sys.exit(code)
+            if code != 0:
+                sys.exit(code)
 
         else:
             #download from brainlife download server
             print(["bl", "dataset", "download", dataset["id"], outdir])
             code=subprocess.call(["bl", "dataset", "download", dataset["id"], outdir])
-            sys.exit(code)
+            if code != 0:
+                sys.exit(code)
             
