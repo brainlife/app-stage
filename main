@@ -16,18 +16,31 @@ import sys
 with open("config.json") as config_json:
     config = json.load(config_json)
     for dataset in config["datasets"]:
-        src=os.environ["BRAINLIFE_ARCHIVE"]+"/"+dataset["project"]+"/"+dataset["id"]+".tar"
+
+        storage = "wrangler"
+        if "storage" in dataset:
+            storage = dataset["storage"]
 
         outdir=dataset["id"]
         if 'outdir' in dataset:
             outdir=dataset["outdir"]
 
-        try: 
-            os.makedirs(outdir)
-        except OSError as exc:
-            if exc.errno == errno.EEXIST and os.path.isdir(outdir):
-                pass
-            else:
-                raise
-        code=subprocess.call(["tar", "xf", src, "-C", outdir])
-        sys.exit(code)
+        if storage == "wrangler":
+            try: 
+                os.makedirs(outdir)
+            except OSError as exc:
+                if exc.errno == errno.EEXIST and os.path.isdir(outdir):
+                    pass
+                else:
+                    raise
+
+            src=os.environ["BRAINLIFE_ARCHIVE"]+"/"+dataset["project"]+"/"+dataset["id"]+".tar"
+            code=subprocess.call(["tar", "xf", src, "-C", outdir])
+            sys.exit(code)
+
+        else:
+            #download from brainlife download server
+            print(["bl", "dataset", "download", dataset["id"], outdir])
+            code=subprocess.call(["bl", "dataset", "download", dataset["id"], outdir])
+            sys.exit(code)
+            
