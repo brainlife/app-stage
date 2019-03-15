@@ -14,6 +14,14 @@ import os
 import sys
 import json
 
+def makedirp(dir):
+    try: 
+	os.makedirs(dir)
+    except OSError as exc:
+	if exc.errno == errno.EEXIST and os.path.isdir(dir):
+	    pass
+	else:
+	    raise
 
 with open("config.json") as config_json:
     config = json.load(config_json)
@@ -30,19 +38,17 @@ with open("config.json") as config_json:
             outdir=dataset["outdir"]
 
         if storage == "wrangler":
-            try: 
-                os.makedirs(outdir)
-            except OSError as exc:
-                if exc.errno == errno.EEXIST and os.path.isdir(outdir):
-                    pass
-                else:
-                    raise
-
+	    makedirp(outdir)
             src=os.environ["BRAINLIFE_ARCHIVE"]+"/"+dataset["project"]+"/"+dataset["id"]+".tar"
             code=subprocess.call(["tar", "xf", src, "-C", outdir])
             if code != 0:
                 sys.exit(code)
-
+	elif storage == "url":
+	    makedirp(outdir)
+            for file in dataset["storage_config"]["files"]:
+                code=subprocess.call(["wget", "-O", outdir+"/"+file["local"], file["url"]])
+                if code != 0:
+                    sys.exit(code)
         else:
             #download from brainlife download server
             #print(["bl", "dataset", "download", dataset["id"], outdir])
@@ -52,7 +58,7 @@ with open("config.json") as config_json:
             
         #check to see .brainlife.json exists (old dataset doesn't have it)
         if not os.path.isfile(outdir+"/.brainlife.json"):
-            print "no .brainlife.json"
+            print "no .brainlife.json.. creating substitute"
             #find the _outputs
             if "_outputs" in config:
                 for output in config["_outputs"]:
@@ -61,4 +67,5 @@ with open("config.json") as config_json:
                         #print(output)
                         with open(outdir+"/.brainlife.json", "w") as f:
                             json.dump(output, f)
+
 
