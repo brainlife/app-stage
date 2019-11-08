@@ -49,6 +49,15 @@ with open("config.json") as config_json:
                 code=subprocess.call(["wget", "-O", outdir+"/"+file["local"], file["url"]])
                 if code != 0:
                     sys.exit(code)
+
+                #if .nii is found on the remote url, compress it to make it .nii.gz as 
+                #all brainlife nifti file needs to be in .nii.gz (for openneuro)
+                if file["url"].endswith(".nii"):
+                    print("compressiong .nii to nii.gz")
+                    tmpname=outdir+"/"+file["local"][:-3] #strip .gz
+                    subprocess.call(["mv", outdir+"/"+file["local"], tmpname]) 
+                    subprocess.call(["gzip", tmpname])
+
         else:
             #download from brainlife download server
             #print(["bl", "dataset", "download", dataset["id"], outdir])
