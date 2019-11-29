@@ -14,6 +14,8 @@ import os
 import sys
 import json
 
+#TODO - I should validate paths specified in file src/dest to make sure it doesn't go outside the workdir
+
 def makedirp(dir):
     try: 
 	os.makedirs(dir)
@@ -57,6 +59,25 @@ with open("config.json") as config_json:
                     tmpname=outdir+"/"+file["local"][:-3] #strip .gz
                     subprocess.call(["mv", outdir+"/"+file["local"], tmpname]) 
                     subprocess.call(["gzip", tmpname])
+
+        elif storage == "datalad":
+	    makedirp(outdir)
+            for file in dataset["storage_config"]["files"]:
+                src="/mnt/datalad/"+file["src"]
+                print("datalad get", src)
+                code=subprocess.call(["datalad", "get", src])
+                if code != 0:
+                    sys.exit(code)
+
+                #if .nii is found on the remote url, compress it to make it .nii.gz as 
+                #all brainlife nifti file needs to be in .nii.gz (for openneuro)
+                if src.endswith(".nii"):
+                    print("compressiong .nii to nii.gz")
+                    dest=outdir+"/"+file["dest"][:-3]
+                    subprocess.call(["cp", src, dest]) 
+                    subprocess.call(["gzip", "-f", dest]) 
+                else:
+                    subprocess.call(["ln", "-sf", src, outdir+"/"+file["dest"]]) 
 
         else:
             #download from brainlife download server
