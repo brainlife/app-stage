@@ -86,16 +86,17 @@ with open("config.json") as config_json:
             if code != 0:
                 sys.exit(code)
             
+        #deprecated
         #check to see .brainlife.json exists (old dataset doesn't have it)
-        if not os.path.isfile(outdir+"/.brainlife.json"):
-            print "no .brainlife.json.. creating substitute"
-            #find the _outputs
-            if "_outputs" in config:
-                for output in config["_outputs"]:
-                    if "dataset_id" in output and "meta" in output and output["dataset_id"] == dataset["id"]:
-                        #print("using config._outputs")
-                        #print(output)
-                        with open(outdir+"/.brainlife.json", "w") as f:
-                            json.dump(output, f)
+        #if not os.path.isfile(outdir+"/.brainlife.json"):
+        #    print "no .brainlife.json.. creating substitute"
+        #    #find the _outputs
+        #    if "_outputs" in config:
+        #        for output in config["_outputs"]:
+        #            if "dataset_id" in output and "meta" in output and output["dataset_id"] == dataset["id"]:
+        #                #print("using config._outputs")
+        #                #print(output)
+        #                with open(outdir+"/.brainlife.json", "w") as f:
+        #                    json.dump(output, f)
 
 
