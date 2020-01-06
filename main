@@ -39,9 +39,9 @@ with open("config.json") as config_json:
         if 'outdir' in dataset:
             outdir=dataset["outdir"]
 
-        if storage == "wrangler":
+        if storage == "wrangler" or storage == "osiris":
 	    makedirp(outdir)
-            src=os.environ["BRAINLIFE_ARCHIVE"]+"/"+dataset["project"]+"/"+dataset["id"]+".tar"
+            src=os.environ["BRAINLIFE_ARCHIVE_"+storage]+"/"+dataset["project"]+"/"+dataset["id"]+".tar"
             code=subprocess.call(["tar", "xf", src, "-C", outdir])
             if code != 0:
                 sys.exit(code)
