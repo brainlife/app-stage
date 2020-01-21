@@ -65,7 +65,7 @@ with open("config.json") as config_json:
             for file in dataset["storage_config"]["files"]:
                 src="/mnt/datalad/"+file["src"]
                 print("datalad get", src)
-                code=subprocess.call(["datalad", "get", src])
+                code=subprocess.call(["datalad", "get", "-d datasets.datalad.org", src])
                 if code != 0:
                     sys.exit(code)
 
