@@ -83,7 +83,7 @@ with open("config.json") as config_json:
                     subprocess.call(["cp", cwd+"/"+src_sub, dest]) 
                     subprocess.call(["gzip", "-f", dest]) 
                 else:
-                    subprocess.call(["ln", "-sf", src, outdir+"/"+file["dest"]]) 
+                    subprocess.call(["ln", "-sf", cwd+"/"+src_sub, outdir+"/"+file["dest"]]) 
 
         else:
             #download from brainlife download server
