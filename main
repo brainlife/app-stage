@@ -80,7 +80,7 @@ with open("config.json") as config_json:
                 if src.endswith(".nii"):
                     print("compressiong .nii to nii.gz")
                     dest=outdir+"/"+file["dest"][:-3]
-                    subprocess.call(["cp", src, dest]) 
+                    subprocess.call(["cp", cwd+"/"+src_sub, dest]) 
                     subprocess.call(["gzip", "-f", dest]) 
                 else:
                     subprocess.call(["ln", "-sf", src, outdir+"/"+file["dest"]]) 
