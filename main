@@ -1,11 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 #PBS -l nodes=1:ppn=1
 #PBS -l vmem=1gb
 #PBS -l walltime=00:05:00
 #PBS -N stage
-##PBS -q normal
-##PBS -A TG-DBS170009
 
 import json
 import subprocess
@@ -18,19 +16,17 @@ import json
 
 def makedirp(dir):
     try: 
-	os.makedirs(dir)
+        os.makedirs(dir)
     except OSError as exc:
-	if exc.errno == errno.EEXIST and os.path.isdir(dir):
-	    pass
-	else:
-	    raise
+        if exc.errno == errno.EEXIST and os.path.isdir(dir):
+            pass
+        else:
+            raise
 
 with open("config.json") as config_json:
     config = json.load(config_json)
     for dataset in config["datasets"]:
-
         print("staging %s" % dataset["id"])
-
         storage = "wrangler"
         if "storage" in dataset:
             storage = dataset["storage"]
@@ -40,13 +36,14 @@ with open("config.json") as config_json:
             outdir=dataset["outdir"]
 
         if storage == "wrangler" or storage == "osiris":
-	    makedirp(outdir)
+            makedirp(outdir)
             src=os.environ["BRAINLIFE_ARCHIVE_"+storage]+"/"+dataset["project"]+"/"+dataset["id"]+".tar"
             code=subprocess.call(["tar", "xvf", src, "-C", outdir])
+            #code=subprocess.call(["ratarmount", src, outdir])
             if code != 0:
                 sys.exit(code)
-	elif storage == "url":
-	    makedirp(outdir)
+        elif storage == "url":
+            makedirp(outdir)
             for file in dataset["storage_config"]["files"]:
                 code=subprocess.call(["wget", "-O", outdir+"/"+file["local"], file["url"]])
                 if code != 0:
@@ -61,7 +58,7 @@ with open("config.json") as config_json:
                     subprocess.call(["gzip", tmpname])
 
         elif storage == "datalad":
-	    makedirp(outdir)
+            makedirp(outdir)
             for file in dataset["storage_config"]["files"]:
                 cwd="/mnt/datalad"
                 src = file["src"]
@@ -91,18 +88,4 @@ with open("config.json") as config_json:
             code=subprocess.call(["bl", "dataset", "download", dataset["id"], outdir])
             if code != 0:
                 sys.exit(code)
-            
-        #deprecated
-        #check to see .brainlife.json exists (old dataset doesn't have it)
-        #if not os.path.isfile(outdir+"/.brainlife.json"):
-        #    print "no .brainlife.json.. creating substitute"
-        #    #find the _outputs
-        #    if "_outputs" in config:
-        #        for output in config["_outputs"]:
-        #            if "dataset_id" in output and "meta" in output and output["dataset_id"] == dataset["id"]:
-        #                #print("using config._outputs")
-        #                #print(output)
-        #                with open(outdir+"/.brainlife.json", "w") as f:
-        #                    json.dump(output, f)
-
 
