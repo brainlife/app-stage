@@ -98,3 +98,12 @@ with open("config.json") as config_json:
             if code != 0:
                 sys.exit(code)
 
+    #validate
+    for dataset in config["datasets"]:
+        if not os.path.exists(dataset["id"]):
+            print("failed to stage", dataset["id"])
+            sys.exit(1)
+
+print("all done")
+
+
