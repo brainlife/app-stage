@@ -100,8 +100,12 @@ with open("config.json") as config_json:
 
     #validate
     for dataset in config["datasets"]:
-        if not os.path.exists(dataset["id"]):
-            print("failed to stage", dataset["id"])
+        outdir=dataset["id"]
+        if 'outdir' in dataset:
+            outdir=dataset["outdir"]
+
+        if not os.path.exists(outdir):
+            print("failed to stage", outdir)
             sys.exit(1)
 
 print("all done")
