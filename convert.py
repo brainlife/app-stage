@@ -63,7 +63,7 @@ with open("config.json") as config_json:
                 json.dump({"meta": meta}, f)
 
             #rename file products to brainlife datatype file names
-            if dataset["datatype"] == DWI:
+            if datatype == DWI:
                 bvecs = glob.glob(outdir+"/*.bvec")
                 subprocess.call(["mv", bvecs[0], outdir+"/dwi.bvecs"])
                 bvals = glob.glob(outdir+"/*.bval")
