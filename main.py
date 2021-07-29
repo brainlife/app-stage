@@ -6,6 +6,8 @@ import errno
 import os
 import sys
 import json
+import requests
+from requests.auth import HTTPBasicAuth
 
 #TODO - I should validate paths specified in file src/dest to make sure it doesn't go outside the workdir
 
@@ -54,6 +56,7 @@ with open("config.json") as config_json:
         elif storage == "url":
             makedirp(outdir)
             for file in dataset["storage_config"]["files"]:
+                #use requests.get?
                 code=subprocess.call(["wget", "-O", outdir+"/"+file["local"], file["url"]])
                 if code != 0:
                     sys.exit(code)
@@ -91,9 +94,19 @@ with open("config.json") as config_json:
                 else:
                     subprocess.call(["ln", "-sf", cwd+"/"+src_sub, outdir+"/"+file["dest"]]) 
 
+        elif storage == "xnat":
+            makedirp(outdir)
+            storage_config = dataset["storage_config"]
+            res = requests.get(storage_config["url"], 
+                auth=HTTPBasicAuth(storage_config["auth"]["username"], storage_config["auth"]["password"]),
+                params={"format": "zip"})
+            if res.status_code != 200:
+                print("xnat returned non-200")
+                print(res)
+                sys.exit(1)
+            open(outdir+"/dicom.zip", "wb").write(res.content)
         else:
             #download from brainlife download server
-            #print(["bl", "dataset", "download", dataset["id"], outdir])
             code=subprocess.call(["bl", "dataset", "download", dataset["id"], outdir])
             if code != 0:
                 sys.exit(code)
