@@ -26,28 +26,29 @@ with open("config.json") as config_json:
             outdir=dataset["outdir"]
 
         if storage == "xnat":
-
-            print("unzipping")
-            code=subprocess.call(["unzip", "-o", "-d", "dicom", "dicom.zip"], cwd=outdir)
-
-            #figure out appropriate file prefix for brainlife datatype
-            name=dataset["datatype"] #unknown..
-            if dataset["datatype"] == T1W:
-                name="t1"
-            if dataset["datatype"] == T2W:
-                name="t2"
-            if dataset["datatype"] == TASK:
-                name="bold"
-            if dataset["datatype"] == DWI:
-                name="dwi"
-            
-            print("running dcm2niix on %s" % outdir)
-            code=subprocess.call(["dcm2niix", "-v", "1", "-z", "o", "-d", "10", "-w", "1", "-f", name, "."], cwd=outdir)
-
-            #load existing meta from _outputs
+            #find information about this object from _outputs
+            datatype=None
             for output in config["_outputs"]:
                 if output["dataset_id"] == dataset["id"]:
                     meta = output["meta"]
+                    datatype = output["datatype"]
+
+            #figure out appropriate file prefix for brainlife datatype
+            name="unknown"
+            if datatype == T1W:
+                name="t1"
+            if datatype == T2W:
+                name="t2"
+            if datatype == TASK:
+                name="bold"
+            if datatype == DWI:
+                name="dwi"
+
+            print("unzipping")
+            code=subprocess.call(["unzip", "-o", "-d", "dicom", "dicom.zip"], cwd=outdir)
+            print("running dcm2niix on %s" % outdir)
+            code=subprocess.call(["dcm2niix", "-v", "1", "-z", "o", "-d", "10", "-w", "1", "-f", name, "."], cwd=outdir)
+
 
             print("loading sidecar .json and creating product.json")
             sidecar_jsons = glob.glob(outdir+"/*.json")
