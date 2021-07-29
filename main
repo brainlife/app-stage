@@ -18,5 +18,5 @@ done
 echo "staging.."
 timeout 240 singularity exec -e docker://brainlife/datalad:0.14.3 ./main.py
 
-echo "converting data (for xnat)"
-timeout 180 singularity exec -e docker://brainlife/ezbids-handler:3.3 ./convert.py
+#echo "converting data (for xnat)"
+#timeout 180 singularity exec -e docker://brainlife/ezbids-handler:3.3 ./convert.py
