@@ -121,6 +121,6 @@ with open("config.json") as config_json:
             print("failed to stage", outdir)
             sys.exit(1)
 
-print("all done")
+print("main.py done")
 
 

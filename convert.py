@@ -15,7 +15,7 @@ DWI="58c33c5fe13a50849b25879b"
 with open("config.json") as config_json:
     config = json.load(config_json)
     for dataset in config["datasets"]:
-        print("staging %s" % dataset["id"])
+        print("converting %s" % dataset["id"])
 
         storage = "wrangler"
         if "storage" in dataset:
@@ -77,6 +77,6 @@ with open("config.json") as config_json:
         else:
             None
 
-print("all done")
+print("convert.py done")
 
 
