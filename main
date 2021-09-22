@@ -5,8 +5,7 @@
 #PBS -l walltime=00:05:00
 #PBS -N stage
 
-set -e
-set -x
+set -ex
 
 #send all env with BRAINLIFE_ prefix to singularity
 for e in $(env); do

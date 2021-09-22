@@ -34,6 +34,7 @@ with open("config.json") as config_json:
 
         if storage == "wrangler" or storage == "osiris" or storage == "osn":
             if 'BRAINLIFE_RATAR_AUTOFS_'+storage in os.environ:
+                print("accessing through ratar", storage)
                 ratarPath = os.environ["BRAINLIFE_RATAR_AUTOFS_"+storage]+"/"+dataset["project"]+"."+dataset["id"]
                 if not os.path.exists(ratarPath):
                     print("ratar directory does not exist", ratarPath);
@@ -48,6 +49,7 @@ with open("config.json") as config_json:
                 else:
                     print(outdir, "already exists")
             else:
+                print("untarring from archive", storage);
                 makedirp(outdir)
                 src=os.environ["BRAINLIFE_ARCHIVE_"+storage]+"/"+dataset["project"]+"/"+dataset["id"]+".tar"
                 code=subprocess.call(["tar", "xvf", src, "-C", outdir])
