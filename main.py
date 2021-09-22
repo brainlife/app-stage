@@ -32,7 +32,7 @@ with open("config.json") as config_json:
         if 'outdir' in dataset:
             outdir=dataset["outdir"]
 
-        if storage == "wrangler" or storage == "osiris":
+        if storage == "wrangler" or storage == "osiris" or storage == "osn":
             if 'BRAINLIFE_RATAR_AUTOFS_'+storage in os.environ:
                 ratarPath = os.environ["BRAINLIFE_RATAR_AUTOFS_"+storage]+"/"+dataset["project"]+"."+dataset["id"]
                 if not os.path.exists(ratarPath):
