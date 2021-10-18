@@ -46,9 +46,15 @@ with open("config.json") as config_json:
 
             print("unzipping")
             code=subprocess.call(["unzip", "-o", "-d", "dicom", "dicom.zip"], cwd=outdir)
+            if code != 0: 
+                print("failed to unzip")
+                sys.exit(code)            
+
             print("running dcm2niix on %s" % outdir)
             code=subprocess.call(["dcm2niix", "-v", "1", "-z", "o", "-d", "10", "-w", "1", "-f", name, "."], cwd=outdir)
-
+            if code != 0: 
+                print("failed to run dcm2niix")
+                sys.exit(code)            
 
             print("loading sidecar .json and creating product.json")
             sidecar_jsons = glob.glob(outdir+"/*.json")
