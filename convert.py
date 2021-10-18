@@ -12,6 +12,8 @@ T2W="594c0325fa1d2e5a1f0beda5"
 TASK="59b685a08e5d38b0b331ddc5"
 DWI="58c33c5fe13a50849b25879b"
 
+product={}
+
 with open("config.json") as config_json:
     config = json.load(config_json)
     for dataset in config["datasets"]:
@@ -72,8 +74,7 @@ with open("config.json") as config_json:
             for key in sidecar:
                 meta[key] = sidecar[key]
 
-            with open("product.json", "w") as f:
-                json.dump({"meta": meta}, f)
+            product[dataset["id"]] = {"meta": meta}
 
             #rename file products to brainlife datatype file names
             if datatype == DWI:
@@ -89,6 +90,9 @@ with open("config.json") as config_json:
 
         else:
             None
+
+with open("product.json", "w") as f:
+    json.dump(product, f)
 
 print("convert.py done")
 
