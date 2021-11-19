@@ -17,7 +17,6 @@ product={}
 with open("config.json") as config_json:
     config = json.load(config_json)
     for dataset in config["datasets"]:
-        print("converting %s" % dataset["id"])
 
         storage = "wrangler"
         if "storage" in dataset:
@@ -28,6 +27,8 @@ with open("config.json") as config_json:
             outdir=dataset["outdir"]
 
         if storage == "xnat":
+            print("converting %s" % dataset["id"])
+
             #find information about this object from _outputs
             datatype=None
             for output in config["_outputs"]:
