@@ -73,14 +73,16 @@ with open("config.json") as config_json:
 
         elif storage == "datalad":
             makedirp(outdir)
+            path = dataset["storage_config"]["path"]
             for file in dataset["storage_config"]["files"]:
                 cwd="/mnt/datalad"
                 src = file["src"]
                 src_tokens = src.split("/")
         
                 #move first dir path to cwd so datalad will find the dataset
-                for i in range(2):
-                    cwd += "/"+src_tokens.pop(0)
+                for p in path.split("/"):
+                    src_tokens.pop(0)
+                    cwd += "/"+p
                 src_sub = "/".join(src_tokens)
                 code=subprocess.call(["datalad", "get", src_sub], cwd=cwd)
                 if code != 0:
