@@ -115,8 +115,8 @@ with open("config.json") as config_json:
                 if output["id"] == dataset["id"]:
                     meta = output["meta"] 
 
-            subject = meta["xnat_subject"]
-            experiment = meta["xnat_experiment"]
+            subject = meta["subject"]
+            experiment = meta["experiment"]
             scan = meta["xnat_scan"]
 
             openssl = subprocess.Popen(["openssl", "rsautl", "-inkey", str(Path.home())+"/.ssh/configEncrypt.key", "-decrypt"],
@@ -126,11 +126,6 @@ with open("config.json") as config_json:
             openssl.stdin.close()
 
             url = hostname+"/data/projects/"+project+"/subjects/"+subject+"/experiments/"+experiment+"/scans/"+scan+"/"+path
-
-            #TODO this only works for original dicom files.
-            #url +="/resources/DICOM/files"
-
-            print(url)
             res = requests.get(url,
                 auth=HTTPBasicAuth(storage_config["token"], secret),
                 params={"format": "zip"})
