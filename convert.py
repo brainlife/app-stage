@@ -91,7 +91,9 @@ with open("config.json") as config_json:
                 os.remove(sidecar_jsons[0]) #sidecar
 
             else:
-                print("xnaT_scan is not set.. probably not dicom")
+                print("xnat_scan is not set.. probably not dicom.. but we need to truncate parent directories.")
+                os.system("mv "+outdir+"/dicom/*/*/*/*/*/*/* "+outdir)
+                os.system("rm -r "+outdir+"/dicom")
 
             os.remove(outdir+"/xnat.zip")
 

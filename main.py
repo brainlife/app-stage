@@ -56,7 +56,7 @@ with open("config.json") as config_json:
                 print("untarring from archive", storage);
                 makedirp(outdir)
                 src=os.environ["BRAINLIFE_ARCHIVE_"+storage]+"/"+dataset["project"]+"/"+dataset["id"]+".tar"
-                code=subprocess.call(["tar", "xvf", src, "--strip", "6", "-C", outdir])
+                code=subprocess.call(["tar", "xvf", src, "-C", outdir])
                 if code != 0:
                     sys.exit(code)
         elif storage == "url":
