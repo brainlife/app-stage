@@ -85,13 +85,15 @@ with open("config.json") as config_json:
                     subprocess.call(["mv", bvecs[0], outdir+"/dwi.bvecs"])
                     bvals = glob.glob(outdir+"/*.bval")
                     subprocess.call(["mv", bvals[0], outdir+"/dwi.bvals"])
+
+                #clean up things
+                shutil.rmtree(outdir+"/dicom")
+                os.remove(sidecar_jsons[0]) #sidecar
+
             else:
                 print("xnaT_scan is not set.. probably not dicom")
 
-            #clean up things
             os.remove(outdir+"/xnat.zip")
-            shutil.rmtree(outdir+"/dicom")
-            os.remove(sidecar_jsons[0]) #sidecar
 
         else:
             print("no conversion necessary")
