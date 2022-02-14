@@ -108,12 +108,12 @@ with open("config.json") as config_json:
             hostname = storage_config["hostname"]
             project = storage_config["project"]
             token = storage_config["token"]
+            path = storage_config["path"]
 
             meta = None
             for output in config["_outputs"]:
                 if output["id"] == dataset["id"]:
                     meta = output["meta"] 
-            print(meta)
 
             subject = meta["xnat_subject"]
             experiment = meta["xnat_experiment"]
@@ -125,10 +125,10 @@ with open("config.json") as config_json:
             secret = openssl.communicate()[0]
             openssl.stdin.close()
 
-            url = hostname+"/data/projects/"+project+"/subjects/"+subject+"/experiments/"+experiment+"/scans/"+scan
+            url = hostname+"/data/projects/"+project+"/subjects/"+subject+"/experiments/"+experiment+"/scans/"+scan+"/"+path
 
             #TODO this only works for original dicom files.
-            url +="/resources/DICOM/files"
+            #url +="/resources/DICOM/files"
 
             print(url)
             res = requests.get(url,
