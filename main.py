@@ -117,7 +117,9 @@ with open("config.json") as config_json:
 
             subject = meta["subject"]
             experiment = meta["session"]
-            scan = meta["xnat_scan"]
+            scan = dataset["id"]
+            if "xnat_scan" in meta:
+                scan = meta["xnat_scan"]
 
             openssl = subprocess.Popen(["openssl", "rsautl", "-inkey", str(Path.home())+"/.ssh/configEncrypt.key", "-decrypt"],
                 stdin=subprocess.PIPE, stdout=subprocess.PIPE)
