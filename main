@@ -14,6 +14,9 @@ for e in $(env); do
   fi
 done
 
+echo "making sure sif image is cached"
+singularity exec -e docker://brainlife/stage whoami
+
 echo "staging.."
 #timeout 240 singularity exec -e docker://brainlife/datalad:0.14.3 ./main.py
 timeout 240 singularity exec -e docker://brainlife/stage ./main.py

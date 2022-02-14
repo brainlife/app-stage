@@ -8,6 +8,8 @@ import sys
 import json
 import requests
 from requests.auth import HTTPBasicAuth
+import base64
+from pathlib import Path
 
 #TODO - I should validate paths specified in file src/dest to make sure it doesn't go outside the workdir
 
@@ -27,6 +29,8 @@ with open("config.json") as config_json:
         storage = "wrangler"
         if "storage" in dataset:
             storage = dataset["storage"]
+
+        print("using storage", storage)
 
         outdir=dataset["id"]
         if 'outdir' in dataset:
@@ -101,8 +105,34 @@ with open("config.json") as config_json:
         elif storage == "xnat":
             makedirp(outdir)
             storage_config = dataset["storage_config"]
-            res = requests.get(storage_config["url"], 
-                auth=HTTPBasicAuth(storage_config["auth"]["username"], storage_config["auth"]["password"]),
+            hostname = storage_config["hostname"]
+            project = storage_config["project"]
+            token = storage_config["token"]
+
+            meta = None
+            for output in config["_outputs"]:
+                if output["id"] == dataset["id"]:
+                    meta = output["meta"] 
+            print(meta)
+
+            subject = meta["xnat_subject"]
+            experiment = meta["xnat_experiment"]
+            scan = meta["xnat_scan"]
+
+            openssl = subprocess.Popen(["openssl", "rsautl", "-inkey", str(Path.home())+"/.ssh/configEncrypt.key", "-decrypt"],
+                stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+            openssl.stdin.write(base64.b64decode(dataset["storage_config"]["secretEnc"]))
+            secret = openssl.communicate()[0]
+            openssl.stdin.close()
+
+            url = hostname+"/data/projects/"+project+"/subjects/"+subject+"/experiments/"+experiment+"/scans/"+scan
+
+            #TODO this only works for original dicom files.
+            url +="/resources/DICOM/files"
+
+            print(url)
+            res = requests.get(url,
+                auth=HTTPBasicAuth(storage_config["token"], secret),
                 params={"format": "zip"})
             if res.status_code != 200:
                 print("xnat returned non-200")
