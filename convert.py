@@ -48,49 +48,53 @@ with open("config.json") as config_json:
                 name="dwi"
 
             print("unzipping")
-            ret=subprocess.run(["unzip", "-o", "-d", "dicom", "dicom.zip"], cwd=outdir)
+            ret=subprocess.run(["unzip", "-o", "-d", "dicom", "xnat.zip"], cwd=outdir)
             if ret.returncode != 0: 
                 print("failed to unzip")
                 sys.exit(ret.returncode)            
 
-            print("running dcm2niix on %s" % outdir)
-            #-v : verbose (n/y or 0/1/2, default 0) [no, yes, logorrheic
-            #-z : gz compress images (y/o/i/n/3, default n) [y=pigz, o=optimal pigz, i=internal:miniz, n=no, 3=no,3D]
-            #-d : directory search depth. Convert DICOMs in sub-folders of in_folder? (0..9, default 5
-            #-w : write behavior for name conflicts (0,1,2, default 2: 0=skip duplicates, 1=overwrite, 2=add suffix)
-            #-b : BIDS sidecar (y/n/o [o=only: no NIfTI], default y)
-            #-f : filename 
-            #. < input folder
-            ret=subprocess.run(["dcm2niix", "-v", "1", "-z", "o", "-d", "10", "-w", "1", "-b", "y", "-f", name, "."], cwd=outdir)
-            if ret.returncode != 0: 
-                print("failed to run dcm2niix")
-                sys.exit(ret.returncode)            
+            if "xnat_scan" in meta:
 
-            print("loading sidecar .json and creating product.json")
-            sidecar_jsons = glob.glob(outdir+"/*.json")
-            with open(sidecar_jsons[0]) as sidecar_f:
-                sidecar = json.load(sidecar_f)
+                print("running dcm2niix on %s" % outdir)
+                #-v : verbose (n/y or 0/1/2, default 0) [no, yes, logorrheic
+                #-z : gz compress images (y/o/i/n/3, default n) [y=pigz, o=optimal pigz, i=internal:miniz, n=no, 3=no,3D]
+                #-d : directory search depth. Convert DICOMs in sub-folders of in_folder? (0..9, default 5
+                #-w : write behavior for name conflicts (0,1,2, default 2: 0=skip duplicates, 1=overwrite, 2=add suffix)
+                #-b : BIDS sidecar (y/n/o [o=only: no NIfTI], default y)
+                #-f : filename 
+                #. < input folder
+                ret=subprocess.run(["dcm2niix", "-v", "1", "-z", "o", "-d", "10", "-w", "1", "-b", "y", "-f", name, "."], cwd=outdir)
+                if ret.returncode != 0: 
+                    print("failed to run dcm2niix")
+                    sys.exit(ret.returncode)            
 
-            #merge meta from output
-            for key in sidecar:
-                meta[key] = sidecar[key]
+                print("loading sidecar .json and creating product.json")
+                sidecar_jsons = glob.glob(outdir+"/*.json")
+                with open(sidecar_jsons[0]) as sidecar_f:
+                    sidecar = json.load(sidecar_f)
 
-            product[dataset["id"]] = {"meta": meta}
+                #merge meta from output
+                for key in sidecar:
+                    meta[key] = sidecar[key]
 
-            #rename file products to brainlife datatype file names
-            if datatype == DWI:
-                bvecs = glob.glob(outdir+"/*.bvec")
-                subprocess.call(["mv", bvecs[0], outdir+"/dwi.bvecs"])
-                bvals = glob.glob(outdir+"/*.bval")
-                subprocess.call(["mv", bvals[0], outdir+"/dwi.bvals"])
+                product[dataset["id"]] = {"meta": meta}
+
+                #rename file products to brainlife datatype file names
+                if datatype == DWI:
+                    bvecs = glob.glob(outdir+"/*.bvec")
+                    subprocess.call(["mv", bvecs[0], outdir+"/dwi.bvecs"])
+                    bvals = glob.glob(outdir+"/*.bval")
+                    subprocess.call(["mv", bvals[0], outdir+"/dwi.bvals"])
+            else:
+                print("xnaT_scan is not set.. probably not dicom")
 
             #clean up things
-            os.remove(outdir+"/dicom.zip")
+            os.remove(outdir+"/xnat.zip")
             shutil.rmtree(outdir+"/dicom")
             os.remove(sidecar_jsons[0]) #sidecar
 
         else:
-            None
+            print("no conversion necessary")
 
 with open("product.json", "w") as f:
     json.dump(product, f)

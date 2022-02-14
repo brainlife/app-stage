@@ -135,7 +135,7 @@ with open("config.json") as config_json:
                 print("xnat returned non-200")
                 print(res)
                 sys.exit(1)
-            open(outdir+"/dicom.zip", "wb").write(res.content)
+            open(outdir+"/xnat.zip", "wb").write(res.content)
         else:
             #download from brainlife download server
             code=subprocess.call(["bl", "dataset", "download", dataset["id"], outdir])
@@ -153,5 +153,4 @@ with open("config.json") as config_json:
             sys.exit(1)
 
 print("main.py done")
-
 
