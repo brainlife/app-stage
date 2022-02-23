@@ -122,7 +122,11 @@ for dataset in config["datasets"]:
         if "xnat_scan" in meta:
             scan = meta["xnat_scan"]
 
-        openssl = subprocess.Popen(["openssl", "rsautl", "-inkey", str(Path.home())+"/.ssh/configEncrypt.key", "-decrypt"],
+        configenckey = str(Path.home())+"/.ssh/configEncrypt.key"
+        if "BRAINLIFE_CONFIGENCKEY" in os.environ:
+            configenckey = os.environ["BRAINLIFE_CONFIGENCKEY"]
+
+        openssl = subprocess.Popen(["openssl", "rsautl", "-inkey", configenckey, "-decrypt"],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         openssl.stdin.write(base64.b64decode(dataset["storage_config"]["secretEnc"]))
         secret = openssl.communicate()[0]
