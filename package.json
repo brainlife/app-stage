@@ -1,7 +1,7 @@
 {
   "abcd": {
-    "start": "./start",
-    "stop": "./stop",
-    "status": "./status"
+    "start-dis": "./start",
+    "stop-dis": "./stop",
+    "status-dis": "./status"
   }
 }
