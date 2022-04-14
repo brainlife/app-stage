@@ -83,7 +83,7 @@ for dataset in config["datasets"]:
             cwd="/mnt/datalad"
             src = file["src"]
             src_tokens = src.split("/")
-    
+
             #move first dir path to cwd so datalad will find the dataset
             for p in path.split("/"):
                 src_tokens.pop(0)
