@@ -148,10 +148,6 @@ for dataset in config["datasets"]:
             sys.exit(code)
 
     #validate to make sure we staged this object
-    outdir=dataset["id"]
-    if 'outdir' in dataset:
-        outdir=dataset["outdir"]
-
     if not os.path.exists(outdir):
         print("failed to stage", outdir)
         sys.exit(1)
