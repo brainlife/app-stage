@@ -37,7 +37,7 @@ for dataset in config["datasets"]:
     if 'outdir' in dataset:
         outdir=dataset["outdir"]
 
-    if storage == "wrangler" or storage == "osiris" or storage == "osn":
+    if storage == "wrangler" or storage == "osiris" or storage == "osn" or storage == "local":
         if 'BRAINLIFE_RATAR_AUTOFS_'+storage in os.environ:
             print("accessing through ratar", storage)
             ratarPath = os.environ["BRAINLIFE_RATAR_AUTOFS_"+storage]+"/"+dataset["project"]+"."+dataset["id"]
