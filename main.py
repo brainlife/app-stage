@@ -103,6 +103,9 @@ for dataset in config["datasets"]:
             else:
                 subprocess.call(["ln", "-sf", cwd+"/"+src_sub, outdir+"/"+file["dest"]]) 
 
+    elif storage == "s3":
+        sys.exit(0)
+
     elif storage == "xnat":
         makedirp(outdir)
         storage_config = dataset["storage_config"]
