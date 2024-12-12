@@ -104,8 +104,16 @@ for dataset in config["datasets"]:
                 subprocess.call(["ln", "-sf", cwd+"/"+src_sub, outdir+"/"+file["dest"]]) 
 
     elif storage == "s3":
+        makedirp(outdir)
+        url = "http://brainlife/warehouse/api/presigned_url"
+        res = requests.get(url,
+            auth=HTTPBasicAuth(storage_config["token"], secret))
+        if res.status_code != 200:
+            print("parsing_presigned url failed")
+            print(res)
+            sys.exit(1)
+        open(outdir+"/s3_pre_signed_url", "wb").write(res.data)
         sys.exit(0)
-
     elif storage == "xnat":
         makedirp(outdir)
         storage_config = dataset["storage_config"]
