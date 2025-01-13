@@ -113,7 +113,7 @@ for dataset in config["datasets"]:
         #     print(res)
         #     sys.exit(1)
         # pre_signed_url = res.data
-        pre_signed_url = 'gs://neuroglancer-janelia-flyem-hemibrain/v1.0/neuroglancer_demo_states/base.json'
+        pre_signed_url = 'https://s3.msi.umn.edu/midb-cmc-nonhuman/public/tract-tracing-neuroglancer/visor_488_Pos0'
         open(outdir + "/s3_pre_signed_url", "wb").write(pre_signed_url.encode())
         sys.exit(0)
     elif storage == "xnat":
