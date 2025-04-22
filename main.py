@@ -119,6 +119,24 @@ for dataset in config["datasets"]:
         open(outdir + "/s3_pre_signed_url", "wb").write(pre_signed_url.encode())
         sys.exit(0)
 
+
+    elif storage == "cloud":
+        makedirp(outdir)
+
+        dataset_id = dataset["id"]
+        warehouse_url = "https://brainlife.io/api/warehouse/cloud/download/cloud-url/" + dataset_id
+
+        res = requests.get(warehouse_url)
+        if res.status_code != 200:
+            print("Failed to retrieve cloud link from dataset. Code:", res.status_code)
+            print("Response:", res.text)
+            sys.exit(1)
+
+        cloud_url = res.text.strip()
+        open(outdir + "/cloud_url", "wb").write(cloud_url.encode())
+        sys.exit(0)
+    
+
     elif storage == "xnat":
         makedirp(outdir)
         storage_config = dataset["storage_config"]
