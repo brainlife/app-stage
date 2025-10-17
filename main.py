@@ -138,25 +138,25 @@ for dataset in config["datasets"]:
 
     elif storage == "s3fs":
         # S3FS with extracted dataset structure (no tar files) - FASTER than current setup
-        if 'BRAINLIFE_RATAR_AUTOFS_s3fs' in os.environ:
-            print("accessing extracted s3fs dataset via ratar mount")
+        if 'BRAINLIFE_s3fs' in os.environ:
+            print("accessing extracted s3fs dataset via mount")
             # Path to extracted dataset directory (not .tar file like osiris)
-            ratarPath = os.environ["BRAINLIFE_RATAR_AUTOFS_s3fs"]+"/"+dataset["project"]+"/"+dataset["id"]
-            if not os.path.exists(ratarPath):
-                print("s3fs dataset directory does not exist", ratarPath)
+            s3Path = os.environ["BRAINLIFE_s3fs"]+"/"+dataset["project"]+"/"+dataset["id"]
+            if not os.path.exists(s3Path):
+                print("s3fs dataset directory does not exist", s3Path)
                 sys.exit(1)
-            ratarDir = os.listdir(ratarPath)
-            if len(ratarDir) == 0:
-                print("s3fs dataset directory is empty.. maybe filesystem offline?", ratarPath)
+            s3Dir = os.listdir(s3Path)
+            if len(s3Dir) == 0:
+                print("s3fs dataset directory is empty.. maybe filesystem offline?", s3Path)
                 sys.exit(1)
             if not os.path.exists(outdir):
                 print("creating symlink to extracted s3fs dataset - NO EXTRACTION NEEDED!")
-                os.symlink(ratarPath, outdir, True)  # Symlink to directory works with S3FS
+                os.symlink(s3Path, outdir, True)  # Symlink to directory works with S3FS
             else:
                 print(outdir, "already exists")
         else:
-            print("no s3fs ratar mount found, falling back to warehouse download")
-            # Fallback to bl CLI download if ratar mount not available
+            print("no s3fs mount found, falling back to warehouse download")
+            # Fallback to bl CLI download if s3fs mount not available
             code=subprocess.call(["bl", "dataset", "download", dataset["id"], outdir])
             if code != 0:
                 sys.exit(code)
