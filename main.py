@@ -160,6 +160,31 @@ for dataset in config["datasets"]:
             code=subprocess.call(["bl", "dataset", "download", dataset["id"], outdir])
             if code != 0:
                 sys.exit(code)
+
+    elif storage == "s3fs-embargo":
+        # S3FS-Embargo with extracted dataset structure (no tar files) - FASTER than current setup
+        if 'BRAINLIFE_s3fs_embargo' in os.environ:
+            print("accessing extracted s3fs-embargo dataset via mount")
+            # Path to extracted dataset directory (not .tar file like osiris)
+            s3Path = os.path.join(os.environ["BRAINLIFE_s3fs_embargo"], str(dataset["project"]), str(dataset["id"]))
+            if not os.path.exists(s3Path):
+                print("s3fs-embargo dataset directory does not exist", s3Path)
+                sys.exit(1)
+            s3Dir = os.listdir(s3Path)
+            if len(s3Dir) == 0:
+                print("s3fs-embargo dataset directory is empty.. maybe filesystem offline?", s3Path)
+                sys.exit(1)
+            if not os.path.exists(outdir):
+                print("creating symlink to extracted s3fs-embargo dataset - NO EXTRACTION NEEDED!")
+                os.symlink(s3Path, outdir, True)  # Symlink to directory works with S3FS-Embargo
+            else:
+                print(outdir, "already exists")
+        else:
+            print("no s3fs-embargo mount found, falling back to warehouse download")
+            # Fallback to bl CLI download if s3fs-embargo mount not available
+            code=subprocess.call(["bl", "dataset", "download", dataset["id"], outdir])
+            if code != 0:
+                sys.exit(code)
     
 
     elif storage == "xnat":
